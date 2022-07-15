@@ -17,9 +17,9 @@ bool check(string s)
 void tag_color(string loc)
 {
    cout<<"Enter 1 to also tag by color or any other key to exit this option"<<endl;
-   int k;
+   string k;
    cin>>k;
-   if(k!=1) return;
+   if(k!="1") return;
    cout<<"Enter the color"<<endl;
    string color;
    cin>>color;
@@ -28,7 +28,7 @@ void tag_color(string loc)
 void database_by_color()
 {
     ofstream out("database_color.txt");
-    for(auto it:tag_by_name)
+    for(auto it:tag_by_color)
     {
         string tag_1=it.first;
         vector<string> texts_tag_1=it.second;
@@ -67,14 +67,14 @@ void input()
 }
 int main()
 {
-    while (true)
+    string n="1";
+    while(n=="1" || n=="2")
     {
-       cout<<"Enter 1 to create tag and 2 to search file"<<endl;
-       int n;
+       cout<<"Enter 1 to create tag and 2 to search file else any key to exit"<<endl;
        cin>>n;
-       if(n==1)
+       if(n=="1")
        input();
-       else if(n==2)
+       else if(n=="2")
        {
          string s;
          cin>>s;
