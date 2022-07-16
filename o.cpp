@@ -2,6 +2,8 @@
 using namespace std;
 map<string,vector<string>> tag_by_name;
 map<string,vector<string>> tag_by_color;
+set<string> tag_name;
+set<string> tag_clr;
 class Input
 {
   public:
@@ -30,25 +32,43 @@ class Input
     }
     void database_by_color()
     {
-        ofstream out("database_color.txt");
+        ofstream out;
+        out.open("database_color.txt",ofstream::out | ofstream::app);
         for(auto it:tag_by_color)
         {
             string tag_1=it.first;
             vector<string> texts_tag_1=it.second;
             for(int i=0;i<texts_tag_1.size();i++)
-            out<<tag_1<<"--"<<texts_tag_1[i]<<endl;
-        }   
+            {
+               string ch=tag_1+"--"+texts_tag_1[i];
+               if(tag_clr.find(ch)==tag_clr.end())
+               {
+                 out<<tag_1<<"--"<<texts_tag_1[i]<<endl;
+                 tag_clr.insert(ch);
+               }
+            }
+        }
+        out.close();   
     }
     void database()
     {
-        ofstream out("database.txt");
+        ofstream out;
+        out.open("database.txt",ofstream::out | ofstream::app);
         for(auto it:tag_by_name)
         {
             string tag_1=it.first;
             vector<string> texts_tag_1=it.second;
             for(int i=0;i<texts_tag_1.size();i++)
-            out<<tag_1<<"--"<<texts_tag_1[i]<<endl;
-        }   
+            {
+               string ch=tag_1+"--"+texts_tag_1[i];
+               if(tag_name.find(ch)==tag_name.end())
+               {
+                 out<<tag_1<<"--"<<texts_tag_1[i]<<endl;
+                 tag_name.insert(ch);
+               }
+            }
+        }
+        out.close();   
     }
     void input()
     {
@@ -88,7 +108,7 @@ class Preprocessing
              else
              key+=st[i];
           }
-          i++;
+          i+=2;
           for(;i<st.length();i++)
           {
              if(st[i] != ' ')
@@ -116,7 +136,7 @@ class Preprocessing
              else
              key+=st[i];
           }
-          i++;
+          i+=2;
           for(;i<st.length();i++)
           {
              if(st[i] != ' ')
@@ -128,90 +148,179 @@ class Preprocessing
           getline(in,st);
        }
     }
+    bool is_file_exist(const char *fileName)
+    {
+    std::ifstream infile(fileName);
+    return infile.good();
+    }
     void process()
     {
+       bool check1=is_file_exist("database.txt");
+       bool check2=is_file_exist("database_color.txt");
+       if(check1)
        preprocess_tag_by_name();
+       if(check2)
        preprocess_tag_by_color();
        return;
     }
 };
-class Delete
+class Search
 {
-    public:
-    void modification_database_name()
+   public:
+   // lcs function is to find tags with longest common character subsequence when tag entered is not correct
+   string lcs(string s, string t)
+   {
+    int n=s.length();
+    int m=t.length();
+	 vector<vector<int>>dp(n+1,vector<int>(m+1,0));
+    for(int j=0;j<=m;j++)
+    dp[0][j]=0;
+    for(int i=0;i<=n;i++)
+    dp[i][0]=0;
+    for(int i=1;i<n+1;i++)
     {
-       
-    }
-    void modification_database_color()
-    {
-      
-    }
-    void delete_by_tag_by_name()
-    {
-        cout<<"Enter the color tag"<<endl;
-        string name;
-        cin>>name;
-        if(tag_by_name.find(name)!=tag_by_name.end())
+        for(int j=1;j<m+1;j++)
         {
-            tag_by_name.erase(name);
-            modification_database_name();
+            if(s[i-1]==t[j-1])
+                dp[i][j]=1+dp[i-1][j-1];
+            else
+                dp[i][j]=max(dp[i-1][j],dp[i][j-1]);
         }
-        return;
     }
-    void delete_by_tag_by_color()
+    int i=n,j=m;
+    string ans;
+    while(i>0 && j>0)
     {
-        cout<<"Enter the color tag"<<endl;
-        string color;
-        cin>>color;
-        if(tag_by_color.find(color)!=tag_by_color.end())
+        if(s[i-1]==t[j-1])
         {
-            tag_by_color.erase(color);
-            modification_database_color();
+            ans.push_back(s[i-1]);
+            i--;
+            j--;
         }
-        return;
-    }
-    void erase()
-    {
-        cout<<"1 to delete tag marked by name or any other key to delete tag marked by color"<<endl;
-        string s;
-        cin>>s;
-        if(s=="1")
-        delete_by_tag_by_name();
+        else if(dp[i-1][j]>dp[i][j-1])
+            i--;
         else
-        delete_by_tag_by_color();
-        return;
+            j--;
     }
+    reverse(ans.begin(),ans.end()); return ans;  
+   }
+   vector<string> longestCommonSubsequence(vector<string> &tag, string text2)
+   {
+        vector<string> v;
+        int maxi=0;
+        for(int i=0;i<tag.size();i++)
+        {
+           string str=lcs(tag[i],text2);
+           if(str.length()>maxi)
+           {
+             while(v.size()>0)
+             v.pop_back();
+             v.push_back(tag[i]);
+             maxi=str.length();
+           }
+           else if(str.length()==maxi)
+           v.push_back(tag[i]); 
+         }
+          return v;
+   }
+   void related_search_by_name(string s)
+   {
+      vector<string> potential_search;
+      for(auto it:tag_by_name)
+      potential_search.push_back(it.first);
+      vector<string> ans=longestCommonSubsequence(potential_search,s);
+      if(ans.size()==0)
+      cout<<"No related searches"<<endl;
+      else 
+      {
+         cout<<"Do you mean to search:"<<endl;
+         for(string x:ans)
+         cout<<x<<endl;
+      }
+   }
+   void related_search_by_color(string s)
+   {
+      vector<string> potential_search;
+      for(auto it:tag_by_color)
+      potential_search.push_back(it.first);
+      vector<string> ans=longestCommonSubsequence(potential_search,s);
+      if(ans.size()==0)
+      cout<<"No related searches"<<endl;
+      else 
+      {
+         cout<<"Do you mean to search:"<<endl;
+         for(string x:ans)
+         cout<<x<<endl;
+      }
+   }
+   void check_by_name(string s)
+   {
+      vector<string> ans;
+      if(tag_by_name.find(s)!=tag_by_name.end())
+      ans=tag_by_name[s];
+      else
+      {
+         related_search_by_name(s);
+         return;
+      }
+      cout<<"Required locations are :"<<endl;
+      for(string x:ans)
+      cout<<x<<endl;
+   }
+   void check_by_color(string s)
+   {
+      vector<string> ans;
+      if(tag_by_color.find(s)!=tag_by_color.end())
+      ans=tag_by_color[s];
+      else
+      {
+         related_search_by_color(s);
+         return;
+      }
+      cout<<"Required locations are :"<<endl;
+      for(string x:ans)
+      cout<<x<<endl;
+
+   }
 };
 int main()
 {
     string n="1";
-    // Preprocessing prx;
+    Preprocessing prx;
     Input ip;
-    // Rename rm;
-    Delete del;
-    // Search src;
+   //  Rename rm;
+    Search src;
     // First doing the preprocessing of the stored data
-    // prx.process();
-    while(n=="1" || n=="2")
+    prx.process();
+    while(1>0)
     {
-       cout<<"Enter 1 to create tag and 2 to search file 3 if you renamed the file but want to keep the same tag 4 to delete that tag else any key to exit"<<endl;
+       cout<<"Enter 1 to create tag and 2 to search file 3 if you renamed the file but want to keep the same tag else any key to exit"<<endl;
        cin>>n;
        if(n=="1")
        ip.input();
        else if(n=="2")
        {
+         cout<<"Enter 1 to search by name or any other key to search by color"<<endl;
+         string n;
+         cin>>n;
+         if(n=="1")
+         {
+         cout<<"Enter the name"<<endl;
          string s;
          cin>>s;
-        //  check(s);
+         src.check_by_name(s);
+         }
+         else
+         {
+         cout<<"Enter the color"<<endl;
+         string s;
+         cin>>s;
+         src.check_by_color(s);
+         }
        }
        else if(n=="3")
        {
          
-       }
-       else if(n=="4")
-       {
-          cout<<"Enter the tag to be deleted"<<endl;
-          del.erase();
        }
        else
        break; 
