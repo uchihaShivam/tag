@@ -128,82 +128,71 @@ class Preprocessing
           getline(in,st);
        }
     }
-    bool is_file_exist(const char *fileName)
-    {
-    std::ifstream infile(fileName);
-    return infile.good();
-    }
     void process()
     {
-       bool check1=is_file_exist("database.txt");
-       bool check2=is_file_exist("database_color.txt");
-       if(check1)
        preprocess_tag_by_name();
-       if(check2)
        preprocess_tag_by_color();
        return;
     }
 };
-// class Delete
-// {
-//     public:
-//     Input ip;
-//     void clear()
-//     {
-//     ofstream file("database.txt");
-//     file<<"";
-//     ofstream file("database_color.txt");
-//     file<<"";
-//     }
-//     void delete_by_tag_by_name()
-//     {
-//         cout<<"Enter the name tag"<<endl;
-//         string name;
-//         cin>>name;
-//         if(tag_by_name.find(name)!=tag_by_name.end())
-//         {
-//             tag_by_name.erase(name);
-//             clear();
-//             ip.input();
-//         }
-//         return;
-//     }
-//     void delete_by_tag_by_color()
-//     {
-//         cout<<"Enter the color tag"<<endl;
-//         string color;
-//         cin>>color;
-//         if(tag_by_color.find(color)!=tag_by_color.end())
-//         {
-//             tag_by_color.erase(color);
-//             clear();
-//             ip.input();
-//         }
-//         return;
-//     }
-//     void erase()
-//     {
-//         cout<<"1 to delete tag marked by name or any other key to delete tag marked by color"<<endl;
-//         string s;
-//         cin>>s;
-//         if(s=="1")
-//         delete_by_tag_by_name();
-//         else
-//         delete_by_tag_by_color();
-//         return;
-//     }
-// };
+class Delete
+{
+    public:
+    void modification_database_name()
+    {
+       
+    }
+    void modification_database_color()
+    {
+      
+    }
+    void delete_by_tag_by_name()
+    {
+        cout<<"Enter the color tag"<<endl;
+        string name;
+        cin>>name;
+        if(tag_by_name.find(name)!=tag_by_name.end())
+        {
+            tag_by_name.erase(name);
+            modification_database_name();
+        }
+        return;
+    }
+    void delete_by_tag_by_color()
+    {
+        cout<<"Enter the color tag"<<endl;
+        string color;
+        cin>>color;
+        if(tag_by_color.find(color)!=tag_by_color.end())
+        {
+            tag_by_color.erase(color);
+            modification_database_color();
+        }
+        return;
+    }
+    void erase()
+    {
+        cout<<"1 to delete tag marked by name or any other key to delete tag marked by color"<<endl;
+        string s;
+        cin>>s;
+        if(s=="1")
+        delete_by_tag_by_name();
+        else
+        delete_by_tag_by_color();
+        return;
+    }
+};
 int main()
 {
     string n="1";
-    Preprocessing prx;
+    // Preprocessing prx;
     Input ip;
     // Rename rm;
-    // Delete del;
+    Delete del;
     // Search src;
     // First doing the preprocessing of the stored data
-    prx.process();
-    while(1>0)
+    // prx.process();
+    while(n=="1" || n=="2")
     {
        cout<<"Enter 1 to create tag and 2 to search file 3 if you renamed the file but want to keep the same tag 4 to delete that tag else any key to exit"<<endl;
        cin>>n;
@@ -222,7 +211,7 @@ int main()
        else if(n=="4")
        {
           cout<<"Enter the tag to be deleted"<<endl;
-        //   del.erase();
+          del.erase();
        }
        else
        break; 
