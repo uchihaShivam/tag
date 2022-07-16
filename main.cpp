@@ -218,7 +218,7 @@ class Search
              v.push_back(tag[i]);
              maxi=str.length();
            }
-           else if(str.length()==maxi)
+           else if(str.length()==maxi && maxi!=0)
            v.push_back(tag[i]); 
          }
           return v;
@@ -283,18 +283,46 @@ class Search
 
    }
 };
+class Display
+{
+   public:
+   void disp_by_name()
+   {
+      cout<<"Tags by name are:"<<endl;
+      for(auto it:tag_by_name)
+      cout<<it.first<<endl;
+   }
+   void disp_by_color()
+   {
+      cout<<"Tags by color are:"<<endl;
+      for(auto it:tag_by_color)
+      cout<<it.first<<endl;
+   }
+   void visual(string s)
+   {
+      if(s=="1")
+      disp_by_name();
+      else if(s=="2")
+      disp_by_color();
+      else
+      {
+         disp_by_name();     
+         disp_by_color();
+      }
+   }
+};
 int main()
 {
     string n="1";
     Preprocessing prx;
     Input ip;
-   //  Rename rm;
+    Display dsp;
     Search src;
     // First doing the preprocessing of the stored data
     prx.process();
     while(1>0)
     {
-       cout<<"Enter 1 to create tag and 2 to search file 3 if you renamed the file but want to keep the same tag else any key to exit"<<endl;
+       cout<<"Enter 1 to create tag and 2 to search file 3 to view all the tags else any key to exit"<<endl;
        cin>>n;
        if(n=="1")
        ip.input();
@@ -320,7 +348,10 @@ int main()
        }
        else if(n=="3")
        {
-         
+         cout<<"Enter 1 to view all name tags or 2 to view all color tags or 3 to view all tags"<<endl;
+         string s;
+         cin>>s;
+         dsp.visual(s);
        }
        else
        break; 
