@@ -69,13 +69,93 @@ class Input
         return;
     }
 };
+class Preprocessing
+{
+    public:
+    void preprocess_tag_by_name()
+    {
+       ifstream in("database.txt");
+       string st;
+       getline(in,st);
+       while (st!="")
+       {
+          string key="",value="";
+          int i=0;
+          for(i=0;i<st.length();i++)
+          {
+             if(st[i]=='-' && st[i+1]=='-')
+             break;
+             else
+             key+=st[i];
+          }
+          i++;
+          for(;i<st.length();i++)
+          {
+             if(st[i] != ' ')
+             value+=st[i];
+             else
+             break;
+          }
+          tag_by_name[key].push_back(value);
+          getline(in,st);
+       }
+    }
+    void preprocess_tag_by_color()
+    {
+       ifstream in("database_color.txt");
+       string st;
+       getline(in,st);
+       while (st!="")
+       {
+          string key="",value="";
+          int i=0;
+          for(i=0;i<st.length();i++)
+          {
+             if(st[i]=='-' && st[i+1]=='-')
+             break;
+             else
+             key+=st[i];
+          }
+          i++;
+          for(;i<st.length();i++)
+          {
+             if(st[i] != ' ')
+             value+=st[i];
+             else
+             break;
+          }
+          tag_by_color[key].push_back(value);
+          getline(in,st);
+       }
+    }
+    void process()
+    {
+       preprocess_tag_by_name();
+       preprocess_tag_by_color();
+       return;
+    }
+};
+class Delete
+{
+    public:
+    void delete()
+    {
+        return;
+    }
+};
 int main()
 {
     string n="1";
+    Preprocessing prx;
     Input ip;
+    // Rename rm;
+    Delete del;
+    // Search src;
+    // First doing the preprocessing of the stored data
+    prx.process();
     while(n=="1" || n=="2")
     {
-       cout<<"Enter 1 to create tag and 2 to search file else any key to exit"<<endl;
+       cout<<"Enter 1 to create tag and 2 to search file 3 if you renamed the file but want to keep the same tag 4 to delete that tag else any key to exit"<<endl;
        cin>>n;
        if(n=="1")
        ip.input();
@@ -84,6 +164,15 @@ int main()
          string s;
          cin>>s;
         //  check(s);
+       }
+       else if(n=="3")
+       {
+         
+       }
+       else if(n=="4")
+       {
+          cout<<"Enter the tag to be deleted"<<endl;
+          del.delete();
        }
        else
        break; 
